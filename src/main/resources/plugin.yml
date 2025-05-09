@@ -1,0 +1,4 @@
+name: SpigotEnergy
+version: '1.0-SNAPSHOT'
+main: de.ctxj.spigotEnergy.SpigotEnergy
+api-version: '1.21'
