@@ -3,18 +3,19 @@ package de.ctxj.spigotEnergy.objects.abstr;
 import org.bukkit.block.Block;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public abstract class EnergyTransferItem extends EnergyItem {
 
-    public static ArrayList<EnergyTransferItem> energyTransferItems = new ArrayList<>();
-
-    private int transferRate;
+    private final int transferRate;
     private EnergyItem direction;
 
-    public EnergyTransferItem(Block block, int maxEnergy, EnergyItem direction) {
+    public EnergyTransferItem(Block block, int maxEnergy, EnergyItem direction, int transferRate) {
         super(block, maxEnergy);
+        this.transferRate = transferRate;
         this.direction = direction;
-        energyTransferItems.add(this);
+
+
     }
 
     //return boolean whether the transfer was successful.
