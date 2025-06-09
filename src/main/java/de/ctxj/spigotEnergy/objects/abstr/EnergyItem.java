@@ -15,10 +15,16 @@ public abstract class EnergyItem {
         this.maxEnergy = maxEnergy;
         energy = 0;
     }
-    //TODO: Fill in
-    public void safeToConfig() {
 
+    public EnergyItem(Block block, int maxEnergy, int energy) {
+        this.block = block;
+        this.maxEnergy = maxEnergy;
+        this.energy = energy;
     }
+
+    public abstract void cfgRegister();
+    public abstract void cfgRemove();
+    public abstract void cfgUpdateEnergy();
 
     public void setEnergy(int energy) {
         this.energy = energy;

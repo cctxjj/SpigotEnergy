@@ -2,9 +2,12 @@ package de.ctxj.spigotEnergy.objects.abstr;
 
 import de.ctxj.spigotEnergy.SpigotEnergy;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -13,49 +16,97 @@ import java.util.concurrent.atomic.AtomicReference;
 public class Generator extends EnergyTransferItem {
 
     static String generatorPath = "generators.";
+    private final ItemStack consumeItem;
+    private final int outputRate;
+    private final Inventory inventory;
 
-    public Generator(Block block, int maxEnergy, EnergyItem direction, int transferRate) {
+    public Generator(Block block, int maxEnergy, EnergyItem direction, int transferRate, ItemStack consumeItem, int outputRate) {
         super(block, maxEnergy, direction, transferRate);
+        this.consumeItem = consumeItem;
+        this.outputRate = outputRate;
+        inventory = Bukkit.createInventory(null, 9, "§7§lGenerator");
     }
 
-    public static void addGenerator(Generator generator) {
+    protected Generator(Block block, int maxEnergy, EnergyItem direction, int transferRate, ItemStack consumeItem, int outputRate, int energy) {
+        super(block, maxEnergy, direction, transferRate);
+        this.consumeItem = consumeItem;
+        this.outputRate = outputRate;
+        this.setEnergy(energy);
+        inventory = Bukkit.createInventory(null, 9, "§7§lGenerator");
+    }
+    //return if generation was successful
+    public boolean generate() {
+        if(getEnergy() + outputRate > getMaxEnergy()) {
+            return false;
+        }
+        if(inventory.contains(consumeItem.getType())) {
+            for(ItemStack item : inventory.getContents()) {
+                if(item == null) {
+                    break;
+                }
+                if(item.getType() == Material.AIR) {
+                    break;
+                }
+                ItemStack cloned = item.clone();
+                cloned.setAmount(consumeItem.getAmount());
+                if(cloned.equals(consumeItem) && item.getAmount() >= consumeItem.getAmount()) {
+                    item.setAmount(item.getAmount() - consumeItem.getAmount());
+                    setEnergy(getEnergy() + outputRate);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void cfgUpdateEnergy() {
+        FileConfiguration config = SpigotEnergy.getEnergyItemManager().getFileConfiguration();
+        config.set(generatorPath + "." + getCurrentGeneratorNum(this) + ".energy", this.getEnergy());
+        SpigotEnergy.getEnergyItemManager().save();
+    }
+
+    public void cfgRegister() {
         FileConfiguration config = SpigotEnergy.getEnergyItemManager().getFileConfiguration();
         int n = 0;
         while(config.contains(generatorPath + "." + n + ".position.world")) {
-            if(!Objects.requireNonNull(config.getString(generatorPath + "." + n + ".position.world")).equalsIgnoreCase("inactive_item")) {
-                n++;
+            if(Objects.requireNonNull(config.getString(generatorPath + "." + n + ".position.world")).equalsIgnoreCase("inactive_item")) {
+                break;
             } else {
-                return;
+                n++;
             }
         }
-        config.set(generatorPath + "." + n + ".position.world", Objects.requireNonNull(generator.getBlock().getLocation().getWorld()).getName());
-        config.set(generatorPath + "." + n + ".position.x", generator.getBlock().getLocation().getX());
-        config.set(generatorPath + "." + n + ".position.y", generator.getBlock().getLocation().getY());
-        config.set(generatorPath + "." + n + ".position.z", generator.getBlock().getLocation().getZ());
 
-        if(generator.getDirection() != null) {
-            config.set(generatorPath + "." + n + ".direction.world", Objects.requireNonNull(generator.getDirection().getBlock().getLocation().getWorld()).getName());
-            config.set(generatorPath + "." + n + ".direction.x", generator.getDirection().getBlock().getLocation().getX());
-            config.set(generatorPath + "." + n + ".direction.y", generator.getDirection().getBlock().getLocation().getY());
-            config.set(generatorPath + "." + n + ".direction.z", generator.getDirection().getBlock().getLocation().getZ());
+        config.set(generatorPath + "." + n + ".position.world", Objects.requireNonNull(this.getBlock().getLocation().getWorld()).getName());
+        config.set(generatorPath + "." + n + ".position.x", this.getBlock().getLocation().getX());
+        config.set(generatorPath + "." + n + ".position.y", this.getBlock().getLocation().getY());
+        config.set(generatorPath + "." + n + ".position.z", this.getBlock().getLocation().getZ());
+
+        if(this.getDirection() != null) {
+            config.set(generatorPath + "." + n + ".direction.world", Objects.requireNonNull(this.getDirection().getBlock().getLocation().getWorld()).getName());
+            config.set(generatorPath + "." + n + ".direction.x", this.getDirection().getBlock().getLocation().getX());
+            config.set(generatorPath + "." + n + ".direction.y", this.getDirection().getBlock().getLocation().getY());
+            config.set(generatorPath + "." + n + ".direction.z", this.getDirection().getBlock().getLocation().getZ());
         }
 
-        config.set(generatorPath + "." + n + ".maxEnergy", generator.getMaxEnergy());
-        config.set(generatorPath + "." + n + ".transferRate", generator.getTransferRate());
+
+        config.set(generatorPath + "." + n + ".maxEnergy", this.getMaxEnergy());
+        config.set(generatorPath + "." + n + ".transferRate", this.getTransferRate());
+        config.set(generatorPath + "." + n + ".outputRate", this.outputRate);
+        config.set(generatorPath + "." + n + ".consumeItem", this.consumeItem);
+        config.set(generatorPath + "." + n + ".energy", this.getEnergy());
 
         SpigotEnergy.getEnergyItemManager().save();
-
     }
 
 
-    public static void removeGenerator(Generator generator) {
-        int number = getCurrentGeneratorNum(generator);
+    public void cfgRemove() {
+        int number = getCurrentGeneratorNum(this);
         if (number == -1) return;
         FileConfiguration config = SpigotEnergy.getEnergyItemManager().getFileConfiguration();
-
+        config.set(generatorPath + "." + number + ".position.world", "inactive_item");
         while(config.contains(generatorPath + "." + (number + 1) + ".position.world") && !Objects.requireNonNull(config.getString(generatorPath + "." + (number + 1) + ".position.world")).equalsIgnoreCase("inactive_item")) {
             int num = number + 1;
-            Bukkit.getConsoleSender().sendMessage("Removing " + num + " generator");
+
             World world = Bukkit.getWorld(Objects.requireNonNull(config.getString(generatorPath + "." + num + ".position.world")));
             int x = config.getInt(generatorPath + "." + num + ".position.x");
             int y = config.getInt(generatorPath + "." + num + ".position.y");
@@ -74,7 +125,10 @@ public class Generator extends EnergyTransferItem {
             }
 
             int maxEnergy = config.getInt(generatorPath + "." + num + ".maxEnergy");
+            int energy = config.getInt(generatorPath + "." + num + ".energy");
             int transferRate = config.getInt(generatorPath + "." + num + ".transferRate");
+            int outputRate = config.getInt(generatorPath + "." + num + ".outputRate");
+            ItemStack consumeItem = config.getItemStack(generatorPath + "." + num + ".consumeItem");
 
             assert world != null;
             config.set(generatorPath + "." + number + ".position.world", world.getName());
@@ -83,7 +137,11 @@ public class Generator extends EnergyTransferItem {
             config.set(generatorPath + "." + number + ".position.z", z);
 
             config.set(generatorPath + "." + number + ".maxEnergy", maxEnergy);
+            config.set(generatorPath + "." + number + ".energy", energy);
             config.set(generatorPath + "." + number + ".transferRate", transferRate);
+            config.set(generatorPath + "." + number + ".consumeItem", consumeItem);
+            config.set(generatorPath + "." + number + ".outputRate", outputRate);
+
             config.set(generatorPath + "." + num + ".position.world", "inactive_item");
             number++;
         }
@@ -106,8 +164,7 @@ public class Generator extends EnergyTransferItem {
         return -1;
     }
 
-    //TODO next: Adapt to all items
-    protected static HashMap<Generator, Block> initializeGenerators() {
+    public static HashMap<Generator, Block> initializeGenerators() {
         AtomicReference<HashMap<Generator, Block>> generatorReference = new AtomicReference<>(new HashMap<>());
         FileConfiguration config = SpigotEnergy.getEnergyItemManager().getFileConfiguration();
         int num = 0;
@@ -129,12 +186,27 @@ public class Generator extends EnergyTransferItem {
             }
 
             int maxEnergy = config.getInt(generatorPath + "." + num + ".maxEnergy");
+            int energy = config.getInt(generatorPath + "." + num + ".energy");
             int transferRate = config.getInt(generatorPath + "." + num + ".transferRate");
+            int outputRate = config.getInt(generatorPath + "." + num + ".outputRate");
+            ItemStack consumeItem = config.getItemStack(generatorPath + "." + num + ".consumeItem");
 
-            generatorReference.get().put(new Generator(block, maxEnergy, null, transferRate), output);
+            generatorReference.get().put(new Generator(block, maxEnergy, null, transferRate, consumeItem, outputRate, energy), output);
             num++;
         }
 
         return generatorReference.get();
+    }
+
+    public Inventory getInventory() {
+        return inventory;
+    }
+
+    public ItemStack getConsumeItem() {
+        return consumeItem;
+    }
+
+    public int getOutputRate() {
+        return outputRate;
     }
 }
