@@ -29,6 +29,18 @@ public class Storage extends EnergyTransferItem {
         SpigotEnergy.getEnergyItemManager().save();
     }
 
+    public void cfgUpdateDirection() {
+        if(this.getDirection() != null) {
+            FileConfiguration config = SpigotEnergy.getEnergyItemManager().getFileConfiguration();
+            int n = getCurrentStorageNum(this);
+            config.set(storagePath + "." + n + ".direction.world", Objects.requireNonNull(this.getDirection().getBlock().getLocation().getWorld()).getName());
+            config.set(storagePath + "." + n + ".direction.x", this.getDirection().getBlock().getLocation().getX());
+            config.set(storagePath + "." + n + ".direction.y", this.getDirection().getBlock().getLocation().getY());
+            config.set(storagePath + "." + n + ".direction.z", this.getDirection().getBlock().getLocation().getZ());
+            SpigotEnergy.getEnergyItemManager().save();
+        }
+    }
+
     public void cfgRegister() {
         FileConfiguration config = SpigotEnergy.getEnergyItemManager().getFileConfiguration();
         int n = 0;
@@ -103,7 +115,6 @@ public class Storage extends EnergyTransferItem {
             number++;
         }
         SpigotEnergy.getEnergyItemManager().save();
-
     }
 
     public static int getCurrentStorageNum(Storage Storage) {

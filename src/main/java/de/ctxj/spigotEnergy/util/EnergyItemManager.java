@@ -10,10 +10,6 @@ import java.util.Set;
 
 public class EnergyItemManager extends FileManager {
 
-    String cablePath = "items.generators";
-    String storagePath = "items.generators";
-    String consumerPath = "items.generators";
-
     public ArrayList<EnergyItem> activeItems = new ArrayList<>();
     public ArrayList<EnergyItem> activeTransferItems = new ArrayList<>();
 
@@ -34,12 +30,13 @@ public class EnergyItemManager extends FileManager {
         ArrayList<EnergyItem> items = new ArrayList<>();
 
         items.addAll(cableKeyset);
+        items.addAll(generators.keySet());
         items.addAll(storageKeyset);
         items.addAll(consumerKeyset);
 
         generators.forEach((generator, dirBlock) -> {
             items.forEach(item -> {
-                if(item.getBlock() == dirBlock) {
+                if(item.getBlock().equals(dirBlock)) {
                     generator.setDirection(item);
                 }
             });
@@ -47,7 +44,7 @@ public class EnergyItemManager extends FileManager {
 
         cables.forEach((cable, dirBlock) -> {
             items.forEach(item -> {
-                if(item.getBlock() == dirBlock) {
+                if(item.getBlock().equals(dirBlock)) {
                     cable.setDirection(item);
                 }
             });
@@ -55,12 +52,12 @@ public class EnergyItemManager extends FileManager {
 
         storages.forEach((storage, dirBlock) -> {
             items.forEach(item -> {
-                if(item.getBlock() == dirBlock) {
+                if(item.getBlock().equals(dirBlock)) {
                     storage.setDirection(item);
                 }
             });
         });
-
+        //TODO: fix this --> generators are not getting their direction assigned properly
         items.addAll(generators.keySet());
 
         this.activeItems = items;

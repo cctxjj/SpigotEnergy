@@ -2,7 +2,6 @@ package de.ctxj.spigotEnergy.objects.abstr;
 
 import org.bukkit.block.Block;
 
-import java.util.ArrayList;
 
 public abstract class EnergyItem {
 

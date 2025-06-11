@@ -31,12 +31,12 @@ public final class SpigotEnergy extends JavaPlugin {
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
             for(EnergyItem item : energyItemManager.activeItems) {
-                Bukkit.getConsoleSender().sendMessage(item.toString());
                 if(item instanceof EnergyTransferItem) {
                     ((EnergyTransferItem) item).transferEnergy();
                     if(item instanceof Generator) {
                         ((Generator)item).generate();
                     }
+                    Bukkit.getConsoleSender().sendMessage(item.toString() + " | E=" + item.getEnergy());
                 }
             }
         }, 20, 40);
@@ -47,6 +47,9 @@ public final class SpigotEnergy extends JavaPlugin {
         // Plugin shutdown logic
         for(EnergyItem item : energyItemManager.activeItems) {
             item.cfgUpdateEnergy();
+            if(item instanceof EnergyTransferItem) {
+                ((EnergyTransferItem) item).cfgUpdateDirection();
+            }
         }
     }
 

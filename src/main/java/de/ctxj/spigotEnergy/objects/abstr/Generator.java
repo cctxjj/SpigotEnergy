@@ -65,6 +65,18 @@ public class Generator extends EnergyTransferItem {
         SpigotEnergy.getEnergyItemManager().save();
     }
 
+    public void cfgUpdateDirection() {
+        if(this.getDirection() != null) {
+            FileConfiguration config = SpigotEnergy.getEnergyItemManager().getFileConfiguration();
+            int n = getCurrentGeneratorNum(this);
+            config.set(generatorPath + "." + n + ".direction.world", Objects.requireNonNull(this.getDirection().getBlock().getLocation().getWorld()).getName());
+            config.set(generatorPath + "." + n + ".direction.x", this.getDirection().getBlock().getLocation().getX());
+            config.set(generatorPath + "." + n + ".direction.y", this.getDirection().getBlock().getLocation().getY());
+            config.set(generatorPath + "." + n + ".direction.z", this.getDirection().getBlock().getLocation().getZ());
+            SpigotEnergy.getEnergyItemManager().save();
+        }
+    }
+
     public void cfgRegister() {
         FileConfiguration config = SpigotEnergy.getEnergyItemManager().getFileConfiguration();
         int n = 0;

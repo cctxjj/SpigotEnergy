@@ -30,6 +30,17 @@ public class Cable extends EnergyTransferItem {
         SpigotEnergy.getEnergyItemManager().save();
     }
 
+    public void cfgUpdateDirection() {
+        if(this.getDirection() != null) {
+            FileConfiguration config = SpigotEnergy.getEnergyItemManager().getFileConfiguration();
+            int n = getCurrentCableNum(this);
+            config.set(cablePath + "." + n + ".direction.world", Objects.requireNonNull(this.getDirection().getBlock().getLocation().getWorld()).getName());
+            config.set(cablePath + "." + n + ".direction.x", this.getDirection().getBlock().getLocation().getX());
+            config.set(cablePath + "." + n + ".direction.y", this.getDirection().getBlock().getLocation().getY());
+            config.set(cablePath + "." + n + ".direction.z", this.getDirection().getBlock().getLocation().getZ());
+            SpigotEnergy.getEnergyItemManager().save();
+        }
+    }
 
     public void cfgRegister() {
         FileConfiguration config = SpigotEnergy.getEnergyItemManager().getFileConfiguration();

@@ -28,6 +28,8 @@ public abstract class EnergyTransferItem extends EnergyItem {
         return false;
     }
 
+    public abstract void cfgUpdateDirection();
+
     public int getTransferRate() {
         return transferRate;
     }
