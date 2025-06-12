@@ -23,6 +23,7 @@ public class EnergyItemManager extends FileManager {
         HashMap<Storage, Block> storages = Storage.initializeStorages();
         HashMap<Consumer, Block> consumers = Consumer.initializeConsumers();
 
+        Set<Generator> generatorKeyset = generators.keySet();
         Set<Cable> cableKeyset = cables.keySet();
         Set<Storage> storageKeyset = storages.keySet();
         Set<Consumer> consumerKeyset = consumers.keySet();
@@ -30,7 +31,7 @@ public class EnergyItemManager extends FileManager {
         ArrayList<EnergyItem> items = new ArrayList<>();
 
         items.addAll(cableKeyset);
-        items.addAll(generators.keySet());
+        items.addAll(generatorKeyset);
         items.addAll(storageKeyset);
         items.addAll(consumerKeyset);
 
@@ -57,8 +58,6 @@ public class EnergyItemManager extends FileManager {
                 }
             });
         });
-        //TODO: fix this --> generators are not getting their direction assigned properly
-        items.addAll(generators.keySet());
 
         this.activeItems = items;
         for(EnergyItem item : activeItems) {

@@ -17,12 +17,15 @@ public abstract class EnergyTransferItem extends EnergyItem {
         if(direction == null) {
             return false;
         }
-        if(getEnergy() < transferRate) {
+        if(getEnergy() <= 0) {
+            if(getEnergy() < 0) {
+                setEnergy(0);
+            }
             return false;
         }
         if(direction.getEnergy()+transferRate <=direction.getMaxEnergy()) {
-            direction.setEnergy(direction.getEnergy()+transferRate);
-            setEnergy(getEnergy()-transferRate);
+            direction.setEnergy(direction.getEnergy()+Math.min(transferRate, getEnergy()));
+            setEnergy(Math.max(0, getEnergy()-transferRate));
             return true;
         }
         return false;

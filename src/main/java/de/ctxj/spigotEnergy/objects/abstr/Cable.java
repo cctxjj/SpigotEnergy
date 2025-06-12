@@ -154,6 +154,7 @@ public class Cable extends EnergyTransferItem {
                 int dirX = config.getInt(cablePath + "." + num + ".direction.x");
                 int dirY = config.getInt(cablePath + "." + num + ".direction.y");
                 int dirZ = config.getInt(cablePath + "." + num + ".direction.z");
+                assert dirWorld != null;
                 output = dirWorld.getBlockAt(dirX, dirY, dirZ);
             }
 

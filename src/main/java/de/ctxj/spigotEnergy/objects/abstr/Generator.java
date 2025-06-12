@@ -189,11 +189,13 @@ public class Generator extends EnergyTransferItem {
             Block block = world.getBlockAt(x, y, z);
 
             Block output = null;
-            if(config.contains(generatorPath + "." + num + ".direction.world")) {
+            if(config.contains(generatorPath + "." + num + ".direction.")) {
+
                 World dirWorld = Bukkit.getWorld(Objects.requireNonNull(config.getString(generatorPath + "." + num + ".direction.world")));
                 int dirX = config.getInt(generatorPath + "." + num + ".direction.x");
                 int dirY = config.getInt(generatorPath + "." + num + ".direction.y");
                 int dirZ = config.getInt(generatorPath + "." + num + ".direction.z");
+                assert dirWorld != null;
                 output = dirWorld.getBlockAt(dirX, dirY, dirZ);
             }
 
@@ -206,7 +208,6 @@ public class Generator extends EnergyTransferItem {
             generatorReference.get().put(new Generator(block, maxEnergy, null, transferRate, consumeItem, outputRate, energy), output);
             num++;
         }
-
         return generatorReference.get();
     }
 
