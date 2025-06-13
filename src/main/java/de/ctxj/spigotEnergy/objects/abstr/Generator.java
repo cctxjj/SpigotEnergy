@@ -42,10 +42,10 @@ public class Generator extends EnergyTransferItem {
         if(inventory.contains(consumeItem.getType())) {
             for(ItemStack item : inventory.getContents()) {
                 if(item == null) {
-                    break;
+                    continue;
                 }
                 if(item.getType() == Material.AIR) {
-                    break;
+                    continue;
                 }
                 ItemStack cloned = item.clone();
                 cloned.setAmount(consumeItem.getAmount());

@@ -6,11 +6,9 @@ import de.ctxj.spigotEnergy.objects.abstr.EnergyTransferItem;
 import de.ctxj.spigotEnergy.objects.abstr.Generator;
 import de.ctxj.spigotEnergy.util.EnergyItemManager;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class SpigotEnergy extends JavaPlugin {
@@ -29,7 +27,21 @@ public final class SpigotEnergy extends JavaPlugin {
         energyItemManager = new EnergyItemManager();
         energyItemManager.initialize();
 
+        AtomicInteger configSafeCounter = new AtomicInteger();
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
+            //Autosafe config (every 5 mins)
+            if(configSafeCounter.get() >= 300) {
+                for(EnergyItem item : energyItemManager.activeItems) {
+                    item.cfgUpdateEnergy();
+                    if(item instanceof EnergyTransferItem) {
+                        ((EnergyTransferItem) item).cfgUpdateDirection();
+                    }
+                }
+                configSafeCounter.set(0);
+            } else {
+                configSafeCounter.getAndIncrement();
+            }
+
             for(EnergyItem item : energyItemManager.activeItems) {
                 if(item instanceof EnergyTransferItem) {
                     ((EnergyTransferItem) item).transferEnergy();

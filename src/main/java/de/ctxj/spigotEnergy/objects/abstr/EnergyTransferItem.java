@@ -23,7 +23,7 @@ public abstract class EnergyTransferItem extends EnergyItem {
             }
             return false;
         }
-        if(direction.getEnergy()+transferRate <=direction.getMaxEnergy()) {
+        if(direction.getEnergy()+Math.min(transferRate, getEnergy()) <= direction.getMaxEnergy()) {
             direction.setEnergy(direction.getEnergy()+Math.min(transferRate, getEnergy()));
             setEnergy(Math.max(0, getEnergy()-transferRate));
             return true;
