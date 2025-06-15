@@ -18,7 +18,7 @@ public final class SpigotEnergy extends JavaPlugin {
     private static SpigotEnergy instance;
     private static EnergyItemManager energyItemManager;
 
-
+    //Test
     @Override
     public void onEnable() {
         // Plugin startup logic
