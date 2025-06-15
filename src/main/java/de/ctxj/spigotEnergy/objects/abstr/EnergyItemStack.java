@@ -1,6 +1,7 @@
 package de.ctxj.spigotEnergy.objects.abstr;
 
 import de.ctxj.spigotEnergy.SpigotEnergy;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -63,11 +64,17 @@ public class EnergyItemStack {
         if (meta != null) {
             List<String> lore = meta.getLore();
             if (lore == null) {
-                lore = new java.util.ArrayList<>();
+                lore = new ArrayList<>();
+            } else {
+                lore.removeIf(String::isEmpty);
+                lore.removeIf(line -> ChatColor.stripColor(line).startsWith("Energy:"));
             }
-            lore.removeIf(line -> ChatColor.stripColor(line).startsWith("Energy:"));
-            lore.add(ChatColor.GREEN + "Energy: " + energy);
-            meta.setLore(lore);
+            List<String> newLore = new ArrayList<>();
+            newLore.add(""); // Leerzeile vor der Energy-Zeile
+            newLore.add(ChatColor.GREEN + "Energy: " + energy);
+            newLore.add(""); // Leerzeile nach der Energy-Zeile
+            newLore.addAll(lore); // Bestehende Lore anhängen
+            meta.setLore(newLore);
             item.setItemMeta(meta);
         }
     }
@@ -75,7 +82,7 @@ public class EnergyItemStack {
     public static boolean isEnergyItemStack(ItemStack item) {
         if (item == null || !item.hasItemMeta()) return false;
         ItemMeta meta = item.getItemMeta();
-        if (meta == null || meta.getLore() == null || !meta.hasDisplayName()) return false;
+        if (meta == null) return false;
         FileConfiguration config = SpigotEnergy.getEnergyItemManager().getFileConfiguration();
         ArrayList<String> names = (ArrayList<String>) config.getStringList(itemStackPath + "." + item.getType().name());
         return names.contains(meta.getDisplayName());

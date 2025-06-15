@@ -1,6 +1,8 @@
 package de.ctxj.spigotEnergy;
 
 import de.ctxj.spigotEnergy.listeners.BasicGeneratorListener;
+import de.ctxj.spigotEnergy.listeners.EnergyItemStackListener;
+import de.ctxj.spigotEnergy.listeners.TestListener;
 import de.ctxj.spigotEnergy.objects.abstr.EnergyItem;
 import de.ctxj.spigotEnergy.objects.abstr.EnergyTransferItem;
 import de.ctxj.spigotEnergy.objects.abstr.Generator;
@@ -29,7 +31,7 @@ public final class SpigotEnergy extends JavaPlugin {
 
         AtomicInteger configSafeCounter = new AtomicInteger();
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
-            //Autosafe config (every 5 mins)
+            //autosave config (every 5 mins)
             if(configSafeCounter.get() >= 300) {
                 for(EnergyItem item : energyItemManager.activeItems) {
                     item.cfgUpdateEnergy();
@@ -48,6 +50,7 @@ public final class SpigotEnergy extends JavaPlugin {
                     if(item instanceof Generator) {
                         ((Generator)item).generate();
                     }
+                    //TODO: remove debugging-line
                     Bukkit.getConsoleSender().sendMessage(item.toString() + " | E=" + item.getEnergy());
                 }
             }
@@ -70,12 +73,14 @@ public final class SpigotEnergy extends JavaPlugin {
     }
 
     public void setupCommands() {
-
+        Bukkit.getPluginCommand("energyitem").setExecutor(new de.ctxj.spigotEnergy.cmds.EnergyItemStackCommand());
     }
 
     public void setupListeners() {
         PluginManager manager = Bukkit.getPluginManager();
         manager.registerEvents(new BasicGeneratorListener(), this);
+        manager.registerEvents(new EnergyItemStackListener(), this);
+        manager.registerEvents(new TestListener(), this);
     }
 
     public void setupConfig() {
