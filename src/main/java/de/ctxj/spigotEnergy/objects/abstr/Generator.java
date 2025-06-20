@@ -1,6 +1,7 @@
 package de.ctxj.spigotEnergy.objects.abstr;
 
 import de.ctxj.spigotEnergy.SpigotEnergy;
+import de.ctxj.spigotEnergy.holographs.Holograph;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -20,19 +21,27 @@ public class Generator extends EnergyTransferItem {
     private final int outputRate;
     private final Inventory inventory;
 
-    public Generator(Block block, int maxEnergy, EnergyItem direction, int transferRate, ItemStack consumeItem, int outputRate) {
+    private final String name;
+
+    private final Holograph holograph;
+
+    public Generator(Block block, int maxEnergy, EnergyItem direction, int transferRate, ItemStack consumeItem, int outputRate, String name) {
         super(block, maxEnergy, direction, transferRate);
         this.consumeItem = consumeItem;
         this.outputRate = outputRate;
-        inventory = Bukkit.createInventory(null, 9, "§7§lGenerator");
+        this.name = name;
+        inventory = Bukkit.createInventory(null, 9, name);
+        this.holograph = new Holograph(block.getLocation().add(0, 1, 0), name + "§8§l| §a§l" + getEnergy());
     }
 
-    protected Generator(Block block, int maxEnergy, EnergyItem direction, int transferRate, ItemStack consumeItem, int outputRate, int energy) {
+    protected Generator(Block block, int maxEnergy, EnergyItem direction, int transferRate, ItemStack consumeItem, int outputRate, int energy, String name) {
         super(block, maxEnergy, direction, transferRate);
         this.consumeItem = consumeItem;
         this.outputRate = outputRate;
         this.setEnergy(energy);
-        inventory = Bukkit.createInventory(null, 9, "§7§lGenerator");
+        this.name = name;
+        inventory = Bukkit.createInventory(null, 9, name);
+        this.holograph = new Holograph(block.getLocation().add(0, 1, 0), name + "§8§l| §a§l" + getEnergy());
     }
     //return if generation was successful
     public boolean generate() {
@@ -100,7 +109,7 @@ public class Generator extends EnergyTransferItem {
             config.set(generatorPath + "." + n + ".direction.z", this.getDirection().getBlock().getLocation().getZ());
         }
 
-
+        config.set(generatorPath + "." + n + ".name", this.getName());
         config.set(generatorPath + "." + n + ".maxEnergy", this.getMaxEnergy());
         config.set(generatorPath + "." + n + ".transferRate", this.getTransferRate());
         config.set(generatorPath + "." + n + ".outputRate", this.outputRate);
@@ -136,6 +145,7 @@ public class Generator extends EnergyTransferItem {
                 config.set(generatorPath + "." + number + ".direction.z", dirZ);
             }
 
+            String name = config.getString(generatorPath + "." + num + ".name");
             int maxEnergy = config.getInt(generatorPath + "." + num + ".maxEnergy");
             int energy = config.getInt(generatorPath + "." + num + ".energy");
             int transferRate = config.getInt(generatorPath + "." + num + ".transferRate");
@@ -148,6 +158,8 @@ public class Generator extends EnergyTransferItem {
             config.set(generatorPath + "." + number + ".position.y", y);
             config.set(generatorPath + "." + number + ".position.z", z);
 
+
+            config.set(generatorPath + "." + number + ".name", name);
             config.set(generatorPath + "." + number + ".maxEnergy", maxEnergy);
             config.set(generatorPath + "." + number + ".energy", energy);
             config.set(generatorPath + "." + number + ".transferRate", transferRate);
@@ -199,16 +211,23 @@ public class Generator extends EnergyTransferItem {
                 output = dirWorld.getBlockAt(dirX, dirY, dirZ);
             }
 
+            String name = config.getString(generatorPath + "." + num + ".name");
             int maxEnergy = config.getInt(generatorPath + "." + num + ".maxEnergy");
             int energy = config.getInt(generatorPath + "." + num + ".energy");
             int transferRate = config.getInt(generatorPath + "." + num + ".transferRate");
             int outputRate = config.getInt(generatorPath + "." + num + ".outputRate");
             ItemStack consumeItem = config.getItemStack(generatorPath + "." + num + ".consumeItem");
 
-            generatorReference.get().put(new Generator(block, maxEnergy, null, transferRate, consumeItem, outputRate, energy), output);
+            generatorReference.get().put(new Generator(block, maxEnergy, null, transferRate, consumeItem, outputRate, energy, name), output);
             num++;
         }
         return generatorReference.get();
+    }
+
+    @Override
+    public void setEnergy(int energy) {
+        super.setEnergy(energy);
+        holograph.setText(name + "§8§l| §a§l" + getEnergy());
     }
 
     public Inventory getInventory() {
@@ -221,5 +240,13 @@ public class Generator extends EnergyTransferItem {
 
     public int getOutputRate() {
         return outputRate;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Holograph getHolograph() {
+        return holograph;
     }
 }

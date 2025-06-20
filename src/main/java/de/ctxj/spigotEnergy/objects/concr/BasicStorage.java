@@ -6,6 +6,6 @@ import org.bukkit.block.Block;
 
 public class BasicStorage extends Storage {
     public BasicStorage(Block block, EnergyItem direction) {
-        super(block, 7000, direction, 2);
+        super(block, 7000, direction, 2, "§fSimple Batterie");
     }
 }

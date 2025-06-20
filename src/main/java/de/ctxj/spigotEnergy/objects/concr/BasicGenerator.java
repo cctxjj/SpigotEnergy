@@ -8,6 +8,6 @@ import org.bukkit.inventory.ItemStack;
 
 public class BasicGenerator extends Generator {
     public BasicGenerator(Block block, EnergyItem direction) {
-        super(block, 200, direction, 10, new ItemStack(Material.GOLD_INGOT), 5);
+        super(block, 200, direction, 10, new ItemStack(Material.GOLD_INGOT), 5, "§fSimpler Generator");
     }
 }

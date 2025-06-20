@@ -2,7 +2,7 @@ package de.ctxj.spigotEnergy.objects.abstr;
 
 import de.ctxj.spigotEnergy.SpigotEnergy;
 import de.ctxj.spigotEnergy.events.ConsumerTriggerEvent;
-import de.ctxj.spigotEnergy.events.EnergyItemUseEvent;
+import de.ctxj.spigotEnergy.holographs.Holograph;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -15,14 +15,22 @@ import java.util.concurrent.atomic.AtomicReference;
 public class Consumer extends EnergyItem {
    
     static String consumerPath = "consumers.";
+
+    private final String name;
+
+    private final Holograph holograph;
    
-    public Consumer(Block block, int maxEnergy) {
+    public Consumer(Block block, int maxEnergy, String name) {
         super(block, maxEnergy);
+        this.name = name;
+        this.holograph = new Holograph(block.getLocation().add(0, 1, 0), name + "§8§l| §a§l" + getEnergy());
     }
 
-    protected Consumer(Block block, int maxEnergy, int energy) {
+    protected Consumer(Block block, int maxEnergy, int energy, String name) {
         super(block, maxEnergy);
+        this.name = name;
         setEnergy(energy);
+        this.holograph = new Holograph(block.getLocation().add(0, 1, 0), name + "§8§l| §a§l" + getEnergy());
     }
 
     public void consume() {
@@ -54,6 +62,7 @@ public class Consumer extends EnergyItem {
         config.set(consumerPath + "." + n + ".position.y", this.getBlock().getLocation().getY());
         config.set(consumerPath + "." + n + ".position.z", this.getBlock().getLocation().getZ());
 
+        config.set(consumerPath + "." + n + ".name", name);
         config.set(consumerPath + "." + n + ".maxEnergy", this.getMaxEnergy());
         config.set(consumerPath + "." + n + ".energy", this.getEnergy());
 
@@ -85,6 +94,7 @@ public class Consumer extends EnergyItem {
                 config.set(consumerPath + "." + number + ".direction.z", dirZ);
             }
 
+            String name = config.getString(consumerPath + "." + num + ".name");
             int maxEnergy = config.getInt(consumerPath + "." + num + ".maxEnergy");
             int energy = config.getInt(consumerPath + "." + num + ".energy");
             int transferRate = config.getInt(consumerPath + "." + num + ".transferRate");
@@ -95,6 +105,7 @@ public class Consumer extends EnergyItem {
             config.set(consumerPath + "." + number + ".position.y", y);
             config.set(consumerPath + "." + number + ".position.z", z);
 
+            config.set(consumerPath + "." + number + ".name", name);
             config.set(consumerPath + "." + number + ".maxEnergy", maxEnergy);
             config.set(consumerPath + "." + number + ".energy", energy);
             config.set(consumerPath + "." + number + ".transferRate", transferRate);
@@ -121,7 +132,6 @@ public class Consumer extends EnergyItem {
         return -1;
     }
 
-    //TODO next: Adapt to all items
     public static HashMap<Consumer, Block> initializeConsumers() {
         AtomicReference<HashMap<Consumer, Block>> ConsumerReference = new AtomicReference<>(new HashMap<>());
         FileConfiguration config = SpigotEnergy.getEnergyItemManager().getFileConfiguration();
@@ -143,15 +153,24 @@ public class Consumer extends EnergyItem {
                 output = dirWorld.getBlockAt(dirX, dirY, dirZ);
             }
 
+            String name = config.getString(consumerPath + "." + num + ".name");
             int maxEnergy = config.getInt(consumerPath + "." + num + ".maxEnergy");
             int energy = config.getInt(consumerPath + "." + num + ".energy");
 
-            ConsumerReference.get().put(new Consumer(block, maxEnergy, energy), output);
+            ConsumerReference.get().put(new Consumer(block, maxEnergy, energy, name), output);
             num++;
         }
 
         return ConsumerReference.get();
     }
 
+    @Override
+    public void setEnergy(int energy) {
+        super.setEnergy(energy);
+        holograph.setText(name + "§8§l| §a§l" + getEnergy());
+    }
 
+    public String getName() {
+        return name;
+    }
 }

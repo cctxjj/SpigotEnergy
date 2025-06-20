@@ -1,9 +1,11 @@
 package de.ctxj.spigotEnergy;
 
+import de.ctxj.spigotEnergy.holographs.Holograph;
 import de.ctxj.spigotEnergy.holographs.HolographListener;
-import de.ctxj.spigotEnergy.listeners.BasicGeneratorListener;
+import de.ctxj.spigotEnergy.listeners.BasicItemsListener;
 import de.ctxj.spigotEnergy.listeners.EnergyItemStackListener;
 import de.ctxj.spigotEnergy.listeners.TestListener;
+import de.ctxj.spigotEnergy.objects.abstr.Consumer;
 import de.ctxj.spigotEnergy.objects.abstr.EnergyItem;
 import de.ctxj.spigotEnergy.objects.abstr.EnergyTransferItem;
 import de.ctxj.spigotEnergy.objects.abstr.Generator;
@@ -46,11 +48,14 @@ public final class SpigotEnergy extends JavaPlugin {
             }
 
             for(EnergyItem item : energyItemManager.activeItems) {
-                if(item instanceof EnergyTransferItem) {
+                if(item instanceof Consumer) {
+                    ((Consumer)item).consume();
+                } else if(item instanceof EnergyTransferItem) {
                     ((EnergyTransferItem) item).transferEnergy();
                     if(item instanceof Generator) {
                         ((Generator)item).generate();
                     }
+
                     //TODO: remove debugging-line
                     Bukkit.getConsoleSender().sendMessage(item.toString() + " | E=" + item.getEnergy());
                 }
@@ -67,6 +72,9 @@ public final class SpigotEnergy extends JavaPlugin {
                 ((EnergyTransferItem) item).cfgUpdateDirection();
             }
         }
+        for(Holograph h : Holograph.holographs) {
+            h.remove();
+        }
     }
 
     //TODO: add actual holographs/expand
@@ -81,7 +89,7 @@ public final class SpigotEnergy extends JavaPlugin {
 
     public void setupListeners() {
         PluginManager manager = Bukkit.getPluginManager();
-        manager.registerEvents(new BasicGeneratorListener(), this);
+        manager.registerEvents(new BasicItemsListener(), this);
         manager.registerEvents(new EnergyItemStackListener(), this);
         manager.registerEvents(new TestListener(), this);
         manager.registerEvents(new HolographListener(), this);
