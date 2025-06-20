@@ -2,7 +2,7 @@ package de.ctxj.spigotEnergy;
 
 import de.ctxj.spigotEnergy.holographs.Holograph;
 import de.ctxj.spigotEnergy.holographs.HolographListener;
-import de.ctxj.spigotEnergy.listeners.BasicItemsListener;
+import de.ctxj.spigotEnergy.listeners.EnergyBlockInteractionListener;
 import de.ctxj.spigotEnergy.listeners.EnergyItemStackListener;
 import de.ctxj.spigotEnergy.listeners.TestListener;
 import de.ctxj.spigotEnergy.objects.abstr.Consumer;
@@ -99,7 +99,7 @@ public final class SpigotEnergy extends JavaPlugin {
 
     public void setupListeners() {
         PluginManager manager = Bukkit.getPluginManager();
-        manager.registerEvents(new BasicItemsListener(), this);
+        manager.registerEvents(new EnergyBlockInteractionListener(), this);
         manager.registerEvents(new EnergyItemStackListener(), this);
         manager.registerEvents(new TestListener(), this);
         manager.registerEvents(new HolographListener(), this);
