@@ -45,7 +45,7 @@ public class EnergyItemStackListener implements Listener {
         EnergyItemStack energyItemStack = new EnergyItemStack(itemStack);
 
 
-        int transferAmount = Math.min(10, storage.getTransferRate()); // Beispielwert, kann angepasst werden
+        int transferAmount = Math.min(1, storage.getTransferRate()); // Beispielwert, kann angepasst werden
 
 
         if (event.getAction() == org.bukkit.event.block.Action.LEFT_CLICK_BLOCK) {

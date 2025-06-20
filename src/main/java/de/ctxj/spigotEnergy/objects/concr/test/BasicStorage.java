@@ -1,4 +1,4 @@
-package de.ctxj.spigotEnergy.objects.concr;
+package de.ctxj.spigotEnergy.objects.concr.test;
 
 import de.ctxj.spigotEnergy.objects.abstr.EnergyItem;
 import de.ctxj.spigotEnergy.objects.abstr.Storage;

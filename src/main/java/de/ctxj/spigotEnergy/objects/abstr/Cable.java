@@ -135,7 +135,6 @@ public class Cable extends EnergyTransferItem {
         return -1;
     }
 
-    //TODO next: Adapt to all items
     public static HashMap<Cable, Block> initializeCables() {
         AtomicReference<HashMap<Cable, Block>> cableReference = new AtomicReference<>(new HashMap<>());
         FileConfiguration config = SpigotEnergy.getEnergyItemManager().getFileConfiguration();

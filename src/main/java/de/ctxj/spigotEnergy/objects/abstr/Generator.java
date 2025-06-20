@@ -113,7 +113,7 @@ public class Generator extends EnergyTransferItem {
         config.set(generatorPath + "." + n + ".maxEnergy", this.getMaxEnergy());
         config.set(generatorPath + "." + n + ".transferRate", this.getTransferRate());
         config.set(generatorPath + "." + n + ".outputRate", this.outputRate);
-        config.set(generatorPath + "." + n + ".consumeItem", this.consumeItem);
+        config.set(generatorPath + "." + n + ".defaultConsumeItem", this.consumeItem);
         config.set(generatorPath + "." + n + ".energy", this.getEnergy());
 
         SpigotEnergy.getEnergyItemManager().save();
@@ -150,7 +150,7 @@ public class Generator extends EnergyTransferItem {
             int energy = config.getInt(generatorPath + "." + num + ".energy");
             int transferRate = config.getInt(generatorPath + "." + num + ".transferRate");
             int outputRate = config.getInt(generatorPath + "." + num + ".outputRate");
-            ItemStack consumeItem = config.getItemStack(generatorPath + "." + num + ".consumeItem");
+            ItemStack consumeItem = config.getItemStack(generatorPath + "." + num + ".defaultConsumeItem");
 
             assert world != null;
             config.set(generatorPath + "." + number + ".position.world", world.getName());
@@ -163,7 +163,7 @@ public class Generator extends EnergyTransferItem {
             config.set(generatorPath + "." + number + ".maxEnergy", maxEnergy);
             config.set(generatorPath + "." + number + ".energy", energy);
             config.set(generatorPath + "." + number + ".transferRate", transferRate);
-            config.set(generatorPath + "." + number + ".consumeItem", consumeItem);
+            config.set(generatorPath + "." + number + ".defaultConsumeItem", consumeItem);
             config.set(generatorPath + "." + number + ".outputRate", outputRate);
 
             config.set(generatorPath + "." + num + ".position.world", "inactive_item");
@@ -216,7 +216,7 @@ public class Generator extends EnergyTransferItem {
             int energy = config.getInt(generatorPath + "." + num + ".energy");
             int transferRate = config.getInt(generatorPath + "." + num + ".transferRate");
             int outputRate = config.getInt(generatorPath + "." + num + ".outputRate");
-            ItemStack consumeItem = config.getItemStack(generatorPath + "." + num + ".consumeItem");
+            ItemStack consumeItem = config.getItemStack(generatorPath + "." + num + ".defaultConsumeItem");
 
             generatorReference.get().put(new Generator(block, maxEnergy, null, transferRate, consumeItem, outputRate, energy, name), output);
             num++;

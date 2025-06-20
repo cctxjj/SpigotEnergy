@@ -4,10 +4,10 @@ import de.ctxj.spigotEnergy.SpigotEnergy;
 import de.ctxj.spigotEnergy.objects.abstr.EnergyItem;
 import de.ctxj.spigotEnergy.objects.abstr.EnergyTransferItem;
 import de.ctxj.spigotEnergy.objects.abstr.Generator;
-import de.ctxj.spigotEnergy.objects.concr.BasicCable;
-import de.ctxj.spigotEnergy.objects.concr.BasicConsumer;
-import de.ctxj.spigotEnergy.objects.concr.BasicGenerator;
-import de.ctxj.spigotEnergy.objects.concr.BasicStorage;
+import de.ctxj.spigotEnergy.objects.concr.test.BasicCable;
+import de.ctxj.spigotEnergy.objects.concr.test.BasicConsumer;
+import de.ctxj.spigotEnergy.objects.concr.test.BasicGenerator;
+import de.ctxj.spigotEnergy.objects.concr.test.BasicStorage;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,10 +17,10 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 
-public class BasicItemsListener implements Listener {
-    //TestListener
+public class EnergyBlockInteractionListener implements Listener {
 
     @EventHandler
     public void basicGenerator(BlockPlaceEvent event) {
@@ -60,24 +60,38 @@ public class BasicItemsListener implements Listener {
 
     @EventHandler
     public void onLeftClick(PlayerInteractEvent event) {
-        if(event.getClickedBlock() == null) return;
-        if(event.getClickedBlock().getType() == Material.GOLD_BLOCK
-                || event.getClickedBlock().getType() == Material.IRON_BLOCK
-                || event.getClickedBlock().getType() == Material.EMERALD_BLOCK) {
-            if(event.getAction() == Action.LEFT_CLICK_BLOCK) {
-                for(EnergyItem item : SpigotEnergy.getEnergyItemManager().activeItems) {
-                    if(item.getBlock().equals(event.getClickedBlock())) {
-                        if(matching.containsKey(event.getPlayer())) {
-                            if(!(matching.get(event.getPlayer()).equals(item))) {
+        if (event.getClickedBlock() == null) return;
+        if (!event.getPlayer().getInventory().getItemInMainHand().equals(SpigotEnergy.defaultEditItem)) {
+            return;
+        }
+
+        if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
+            for (EnergyItem item : SpigotEnergy.getEnergyItemManager().activeItems) {
+                if (item.getBlock().equals(event.getClickedBlock())) {
+                    if (event.getPlayer().isSneaking()) {
+                        event.getPlayer().sendMessage("§f§lInformationen zum Energieitem: ");
+                        for(Field field : item.getClass().getDeclaredFields()) {
+                            field.setAccessible(true);
+                            try {
+                                event.getPlayer().sendMessage("§a" + field.getName() + ": §7" + field.get(item));
+                            } catch (IllegalAccessException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    } else {
+                        if (matching.containsKey(event.getPlayer())) {
+                            if (!(matching.get(event.getPlayer()).equals(item))) {
                                 matching.get(event.getPlayer()).setDirection(item);
                                 matching.remove(event.getPlayer());
                             }
                         } else if (item instanceof EnergyTransferItem) {
                             matching.put(event.getPlayer(), (EnergyTransferItem) item);
                         }
+                        return;
                     }
                 }
             }
+            event.getPlayer().spigot().sendMessage(net.md_5.bungee.api.ChatMessageType.ACTION_BAR, new net.md_5.bungee.api.chat.TextComponent("§cKein Energieräger"));
         }
     }
 

@@ -1,4 +1,4 @@
-package de.ctxj.spigotEnergy.objects.concr;
+package de.ctxj.spigotEnergy.objects.concr.test;
 
 import de.ctxj.spigotEnergy.objects.abstr.Consumer;
 import org.bukkit.block.Block;

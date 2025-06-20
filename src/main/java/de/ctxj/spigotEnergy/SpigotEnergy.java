@@ -11,6 +11,10 @@ import de.ctxj.spigotEnergy.objects.abstr.EnergyTransferItem;
 import de.ctxj.spigotEnergy.objects.abstr.Generator;
 import de.ctxj.spigotEnergy.util.EnergyItemManager;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.event.entity.ItemMergeEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -18,6 +22,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public final class SpigotEnergy extends JavaPlugin {
 
+
+    public static ItemStack defaultConsumeItem = new ItemStack(Material.DIAMOND, 1);
+    public static ItemStack defaultEditItem = new ItemStack(Material.STICK);
     private static SpigotEnergy instance;
     private static EnergyItemManager energyItemManager;
 
@@ -31,6 +38,11 @@ public final class SpigotEnergy extends JavaPlugin {
         setupListeners();
         energyItemManager = new EnergyItemManager();
         energyItemManager.initialize();
+
+        ItemMeta meta = defaultEditItem.getItemMeta();
+        assert meta != null;
+        meta.setDisplayName("§e§lENERGIE-EDITOR");
+        defaultEditItem.setItemMeta(meta);
 
         AtomicInteger configSafeCounter = new AtomicInteger();
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
@@ -76,8 +88,6 @@ public final class SpigotEnergy extends JavaPlugin {
             h.remove();
         }
     }
-
-    //TODO: add actual holographs/expand
 
     public static SpigotEnergy getInstance() {
         return instance;
