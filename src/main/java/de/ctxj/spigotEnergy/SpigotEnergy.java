@@ -1,5 +1,6 @@
 package de.ctxj.spigotEnergy;
 
+import de.ctxj.spigotEnergy.holographs.HolographListener;
 import de.ctxj.spigotEnergy.listeners.BasicGeneratorListener;
 import de.ctxj.spigotEnergy.listeners.EnergyItemStackListener;
 import de.ctxj.spigotEnergy.listeners.TestListener;
@@ -68,6 +69,8 @@ public final class SpigotEnergy extends JavaPlugin {
         }
     }
 
+    //TODO: add actual holographs/expand
+
     public static SpigotEnergy getInstance() {
         return instance;
     }
@@ -81,6 +84,7 @@ public final class SpigotEnergy extends JavaPlugin {
         manager.registerEvents(new BasicGeneratorListener(), this);
         manager.registerEvents(new EnergyItemStackListener(), this);
         manager.registerEvents(new TestListener(), this);
+        manager.registerEvents(new HolographListener(), this);
     }
 
     public void setupConfig() {

@@ -6,7 +6,6 @@ import de.ctxj.spigotEnergy.objects.abstr.EnergyItem;
 import de.ctxj.spigotEnergy.objects.abstr.EnergyItemStack;
 import de.ctxj.spigotEnergy.objects.abstr.Storage;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,17 +15,7 @@ import org.bukkit.inventory.ItemStack;
 public class EnergyItemStackListener implements Listener {
 
     @EventHandler
-    public void EnergyItemStackUse(org.bukkit.event.player.PlayerInteractEvent event) {
-        if(event.getItem() == null) return;
-        try {
-            EnergyItemStack item = new EnergyItemStack(event.getItem());
-            EnergyItemUseEvent newEvent = new EnergyItemUseEvent(event.getPlayer(), item);
-            Bukkit.getPluginManager().callEvent(newEvent);
-        } catch (Exception ignored) {}
-    }
-
-    @EventHandler
-    public void onStorageBlockInteract(org.bukkit.event.player.PlayerInteractEvent event) {
+    public void onItemInteract(org.bukkit.event.player.PlayerInteractEvent event) {
         if (event.getClickedBlock() == null || event.getItem() == null) return;
 
         Player player = event.getPlayer();
@@ -44,7 +33,14 @@ public class EnergyItemStackListener implements Listener {
                 break;
             }
         }
-        if (storage == null) return;
+        if (storage == null) {
+            try {
+                EnergyItemStack item = new EnergyItemStack(event.getItem());
+                EnergyItemUseEvent newEvent = new EnergyItemUseEvent(event.getPlayer(), item);
+                Bukkit.getPluginManager().callEvent(newEvent);
+            } catch (Exception ignored) {}
+            return;
+        }
 
         EnergyItemStack energyItemStack = new EnergyItemStack(itemStack);
 
@@ -61,9 +57,9 @@ public class EnergyItemStackListener implements Listener {
                 energyItemStack.setEnergy(energyItemStack.getEnergy() - transferableEnergy);
                 storage.setEnergy(storage.getEnergy() + transferableEnergy);
                 storage.cfgUpdateEnergy();
-                player.spigot().sendMessage(net.md_5.bungee.api.ChatMessageType.ACTION_BAR, new net.md_5.bungee.api.chat.TextComponent(ChatColor.RED + "-" + transferableEnergy));
+                player.spigot().sendMessage(net.md_5.bungee.api.ChatMessageType.ACTION_BAR, new net.md_5.bungee.api.chat.TextComponent("§c-" + transferableEnergy));
             } else {
-                player.spigot().sendMessage(net.md_5.bungee.api.ChatMessageType.ACTION_BAR, new net.md_5.bungee.api.chat.TextComponent(ChatColor.RED + "Speicher voll!"));
+                player.spigot().sendMessage(net.md_5.bungee.api.ChatMessageType.ACTION_BAR, new net.md_5.bungee.api.chat.TextComponent("§cSpeicher voll!"));
             }
         }
 
@@ -73,9 +69,9 @@ public class EnergyItemStackListener implements Listener {
                 energyItemStack.setEnergy(energyItemStack.getEnergy() + transferableEnergy);
                 storage.setEnergy(storage.getEnergy() - transferableEnergy);
                 storage.cfgUpdateEnergy();
-                player.spigot().sendMessage(net.md_5.bungee.api.ChatMessageType.ACTION_BAR, new net.md_5.bungee.api.chat.TextComponent(ChatColor.GREEN + "+" + transferableEnergy));
+                player.spigot().sendMessage(net.md_5.bungee.api.ChatMessageType.ACTION_BAR, new net.md_5.bungee.api.chat.TextComponent("§a+" + transferableEnergy));
             } else {
-                player.spigot().sendMessage(net.md_5.bungee.api.ChatMessageType.ACTION_BAR, new net.md_5.bungee.api.chat.TextComponent(ChatColor.RED + "Keine Energie im Speicher!"));
+                player.spigot().sendMessage(net.md_5.bungee.api.ChatMessageType.ACTION_BAR, new net.md_5.bungee.api.chat.TextComponent("§cKeine Energie im Speicher!"));
             }
         }
     }

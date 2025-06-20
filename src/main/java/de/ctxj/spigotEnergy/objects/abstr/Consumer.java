@@ -1,6 +1,8 @@
 package de.ctxj.spigotEnergy.objects.abstr;
 
 import de.ctxj.spigotEnergy.SpigotEnergy;
+import de.ctxj.spigotEnergy.events.ConsumerTriggerEvent;
+import de.ctxj.spigotEnergy.events.EnergyItemUseEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -21,6 +23,11 @@ public class Consumer extends EnergyItem {
     protected Consumer(Block block, int maxEnergy, int energy) {
         super(block, maxEnergy);
         setEnergy(energy);
+    }
+
+    public void consume() {
+        ConsumerTriggerEvent newEvent = new ConsumerTriggerEvent(this);
+        Bukkit.getPluginManager().callEvent(newEvent);
     }
 
 
